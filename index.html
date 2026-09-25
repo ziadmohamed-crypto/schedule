@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d3b53">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Level 1 Schedule</title>
+<style>
+:root{--bg:#f3f5f2;--card:#fff;--ink:#16212b;--mute:#66737d;--line:#dde3df;--brand:#1d3b53;--acc:#e0a526;--now:#dff3e4;--r:12px;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10171d;--card:#18222b;--ink:#e9eef1;--mute:#8d9ba6;--line:#2a3742;--brand:#7fb0d6;--now:#173826;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10171d;--card:#18222b;--ink:#e9eef1;--mute:#8d9ba6;--line:#2a3742;--brand:#7fb0d6;--now:#173826;color-scheme:dark}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 "Segoe UI",Tahoma,system-ui,sans-serif;display:flex;flex-direction:column}
+header{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--brand);color:#fff}
+header h1{font-size:17px;margin:0}
+header small{opacity:.8;display:block;font-weight:400}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 11px}
+header button{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+button.on{background:var(--acc);color:#16212b;border-color:var(--acc)}
+main{flex:1;overflow:auto;padding:14px 16px 20px;max-width:1200px;width:100%;margin:0 auto}
+.wrap{max-width:1200px;margin:0 auto}
+nav{display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;border:0;border-radius:0;padding:13px 4px;font-weight:600;background:none;color:var(--mute)}
+nav button.on{color:var(--brand);box-shadow:inset 0 3px 0 var(--acc);background:none}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.days{display:flex;gap:6px;overflow-x:auto}
+.item{background:var(--card);border:1px solid var(--line);border-inline-start:6px solid var(--c,#999);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
+.item.now{background:var(--now);outline:2px solid #2f9e57}
+.item b{display:block}.item span{color:var(--mute);font-size:13px}
+.tm{font-variant-numeric:tabular-nums;font-weight:700}
+.badge{display:inline-block;background:#2f9e57;color:#fff;border-radius:99px;padding:0 8px;font-size:12px;margin-inline-start:6px}
+.grid{display:none;grid-template-columns:repeat(5,1fr);gap:10px}
+.col h3{margin:0 0 6px}
+body.laptop .grid{display:grid}body.laptop .daylist{display:none}
+body.laptop .bar .days{display:none}
+body.laptop .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+input,select,textarea{font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);max-width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.row input[type=text]{flex:1;min-width:150px}
+.task{display:flex;gap:10px;align-items:flex-start}.task.done .t{text-decoration:line-through;opacity:.55}
+.x{margin-inline-start:auto;color:#b3261e}
+.toast{position:fixed;inset-inline:12px;top:calc(env(safe-area-inset-top,0px) + 10px);background:var(--brand);color:#fff;padding:12px 14px;border-radius:var(--r);z-index:9;box-shadow:0 6px 24px #0005;max-width:520px;margin:auto}
+.lock{color:var(--mute);font-size:13px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:10px}.ccard{text-align:start;border:1px solid var(--line);border-top:6px solid var(--c);border-radius:var(--r);padding:14px 12px;display:flex;flex-direction:column;gap:2px}.ccard b{font-size:17px}.ccard span{color:var(--mute);font-size:13px}.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;z-index:10}.modal[hidden]{display:none}.modal div{background:var(--card);padding:18px;border-radius:var(--r);width:min(320px,90%)}.modal input{width:100%;margin:8px 0}.trk{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:12px}.live{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}.live span,.day span{color:var(--mute);font-size:13px}.pb{height:10px;background:var(--line);border-radius:99px;overflow:hidden}.pb i{display:block;height:100%;background:#2f9e57;border-radius:99px;transition:width .6s}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#d93025;margin-inline-end:6px;animation:pl 1.4s infinite}@keyframes pl{50%{opacity:.25}}@media (prefers-reduced-motion:reduce){.dot{animation:none}}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:2px 9px}.chip.done{background:var(--now)}.chip.live{background:#2f9e57;color:#fff;border-color:#2f9e57}.hint{font-size:13px;color:var(--mute);margin:8px 0}
+</style></head>
+<body>
+<header>
+ <h1>Level 1 · Communications &amp; Computer Eng.<small>Semester 1, 2026/2027</small></h1>
+ <div class="tools">
+  <select id="grp" aria-label="Group"><option>G1</option><option>G2</option></select>
+  <button id="view">Laptop view</button>
+  <button id="notif">Enable alerts</button>
+  <button id="inst" hidden>Install app</button>
+  <button id="lead">Leader</button>
+ </div>
+</header>
+<main id="main"></main>
+<nav><button data-t="schedule" class="on">Schedule</button><button data-t="tasks">Tasks</button><button data-t="data">Data</button></nav>
+<div id="modal" class="modal" hidden><div role="dialog" aria-label="Leader code"><b>Leader code</b><input id="code" type="password" inputmode="numeric" placeholder="Enter code" autocomplete="off"><p id="cerr" class="lock" style="color:#b3261e" hidden>Wrong code. Try again.</p><button class="on" id="cok">Unlock</button> <button id="ccx">Cancel</button></div></div>
+<div id="toast" class="toast" hidden></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+const CODE="2344";
+const DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday"];
+const P=[[540,585],[585,630],[640,685],[685,730],[750,795],[795,840],[850,895],[895,940],[945,990],[990,1035],[1035,1080]];
+const COL={ELE152:"#e0a526",ELE142:"#5faa5f",ELE141:"#e08a5a",ELE151:"#6b8fd4",BAS110:"#d9c34a"};
+const L=(g,d,code,name,kind,a,b,room,who)=>({id:`${g}${d}${code}${kind}${a}`,g,d,code,name,kind,s:P[a-1][0],e:P[b-1][1],room,who});
+const BASE=[
+L("G1",0,"ELE152","Logic Circuits","Lecture",3,4,"NP303","Dr. Hala Abdelkader + Dr. Maher Abdelrasool"),
+L("G1",0,"ELE142","Elements of Semiconductors","Lecture",5,6,"NP303","Dr. Islam Mansour"),
+L("G1",0,"ELE152","Logic Circuits","Lab",8,10,"SB5-11 Logic Lab","Eng. Iman Mohamed"),
+L("G2",0,"ELE152","Logic Circuits","Lecture",1,2,"NP303","Dr. Hala Abdelkader + Dr. Maher Abdelrasool"),
+L("G2",0,"ELE142","Elements of Semiconductors","Lecture",3,4,"NP305","Dr. Islam Mansour"),
+L("G2",0,"ELE152","Logic Circuits","Lab",5,7,"SB5-11 Logic Lab","Eng. Iman Mohamed"),
+L("G2",0,"ELE151","Structure Programming","Lab",8,10,"SB5-9 Lab","Eng. Afaf Raafat"),
+L("G1",2,"ELE142","Elements of Semiconductors","Tutorial",1,2,"NP205","Eng. Sara Adel"),
+L("G1",2,"ELE141","Principles of Electrical Eng.","Lecture",3,4,"NP304","Dr. Aya Hossam + Dr. Saeed Imam"),
+L("G1",2,"ELE141","Principles of Electrical Eng.","Tutorial",5,6,"NP205","Eng. Hadeer Ashraf"),
+L("G2",2,"ELE142","Elements of Semiconductors","Tutorial",3,4,"NP204","Eng. Sara Adel"),
+L("G2",2,"ELE141","Principles of Electrical Eng.","Lecture",5,6,"NP304","Dr. Aya Hossam + Dr. Saeed Imam"),
+L("G2",2,"ELE141","Principles of Electrical Eng.","Tutorial",7,8,"NP205","Eng. Hadeer Ashraf"),
+L("G1",3,"BAS110","Differential Equations","Lecture",1,2,"","")
+,L("G1",3,"BAS110","Differential Equations","Tutorial",3,4,"","")
+,L("G1",3,"ELE151","Structure Programming","Lecture",5,6,"","Dr. Ahmed Mahrez")
+,L("G1",3,"ELE151","Structure Programming","Lab",7,9,"SB5-9 Lab","Eng. Afaf Raafat"),
+L("G2",3,"BAS110","Differential Equations","Lecture",3,4,"",""),
+L("G2",3,"BAS110","Differential Equations","Tutorial",5,6,"",""),
+L("G2",3,"ELE151","Structure Programming","Lecture",7,8,"","Dr. Ahmed Mahrez")];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=m=>{const h=Math.floor(m/60),mm=String(m%60).padStart(2,"0");return `${h%12||12}:${mm} ${h<12?"AM":"PM"}`};
+let S={tasks:[],notes:[],extra:[],removed:[],res:{}};
+let ui={course:null,tab:"schedule",day:Math.min(Math.max(new Date().getDay(),0),4),leader:false,grp:"G1",notif:false};
+try{ui.grp=localStorage.getItem("grp")||"G1";ui.notif=localStorage.getItem("notif")==="1"}catch(e){}
+let seen=new Set(),firstLoad=true,ref=null;
+
+function all(){return BASE.filter(x=>!S.removed.includes(x.id)).concat(S.extra)}
+function mine(){return all().filter(x=>x.g===ui.grp).sort((a,b)=>a.d-b.d||a.s-b.s)}
+
+/* ---------- storage: shared db when available, else this device ---------- */
+async function load(){
+ try{const raw=localStorage.getItem("state");if(raw)S={...S,...JSON.parse(raw)}}catch(e){}
+ try{
+  const c=window.FIREBASE_CONFIG;
+  if(window.firebase&&c&&c.databaseURL){
+   firebase.initializeApp(c);ref=firebase.database().ref("state");
+   ref.child("data").on("value",snap=>{const v=snap.val();if(!v)return;
+    try{S={...S,...JSON.parse(v)}}catch(e){return}
+    S.tasks.forEach(t=>{if(!seen.has(t.id)&&!firstLoad)alertNew(t);seen.add(t.id)});firstLoad=false;
+    try{localStorage.setItem("state",JSON.stringify(S))}catch(e){}render()},e=>toast("Cannot read the online database: "+(e&&e.code||e)));
+  } else toast("Firebase is not set up — edits will only stay on this device.")
+ }catch(e){}
+}
+async function save(){
+ try{localStorage.setItem("state",JSON.stringify(S))}catch(e){}
+ if(ref){try{await ref.update({data:JSON.stringify(S),key:ui.key+"|"+Date.now()+Math.random()});toast("Saved ✓ — visible to everyone now")}catch(e){toast("NOT SAVED: "+(e.code||e.message)+" — check the leader code and the Firebase rules.")}}
+ else toast("NOT CONNECTED to the online database. Reload the page and check firebase-config.js.")
+}
+S.tasks.forEach(t=>seen.add(t.id));
+
+/* ---------- notifications ---------- */
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,7000);try{navigator.vibrate&&navigator.vibrate(200)}catch(e){}}
+function notify(title,body){toast(title+" — "+body);
+ if(ui.notif&&"Notification" in window&&Notification.permission==="granted"){try{swReg?swReg.showNotification(title,{body,icon:"icon-192.png"}):new Notification(title,{body})}catch(e){}}}
+function alertNew(t){notify("New task",t.title+(t.due?" (due "+t.due+")":""))}
+const fired=new Set();
+function tick(){
+ const n=new Date(),d=n.getDay(),m=n.getHours()*60+n.getMinutes(),key=n.toDateString();
+ mine().filter(x=>x.d===d).forEach(x=>{
+  if(m===x.s&&!fired.has(key+x.id)){fired.add(key+x.id);notify("Lecture starting now",`${x.code} ${x.kind} · ${x.room||"room TBA"}`)}
+  if(m===x.e&&!fired.has(key+x.id+"e")){fired.add(key+x.id+"e");notify("Lecture ended",`${x.code} ${x.kind} is finished`)}
+  if(m===x.s-10&&!fired.has(key+x.id+"p")){fired.add(key+x.id+"p");notify("Starts in 10 minutes",`${x.code} ${x.kind} · ${x.room||"room TBA"}`)}});
+ if($("#main")&&ui.tab==="schedule")render();
+}
+setInterval(tick,10000);
+
+/* ---------- views ---------- */
+function card(x,now){const c=COL[x.code]||"#999";
+ return `<div class="item ${now?"now":""}" style="--c:${c}"><b>${esc(x.code)} ${esc(x.name)} · ${x.kind}${now?'<span class="badge">Now</span>':""}</b>
+ <span class="tm">${fmt(x.s)} – ${fmt(x.e)}</span> <span>${esc(x.room||"Room TBA")}${x.who?" · "+esc(x.who):""}</span>
+ ${ui.leader?`<button class="x" onclick="delLec('${x.id}')" aria-label="Delete">Delete</button>`:""}</div>`}
+function isNow(x){const n=new Date();const m=n.getHours()*60+n.getMinutes();return n.getDay()===x.d&&m>=x.s&&m<x.e}
+function tracker(){
+ const n=new Date(),td=n.getDay(),nm=n.getHours()*60+n.getMinutes()+n.getSeconds()/60;
+ const tl=mine().filter(x=>x.d===td);
+ if(!tl.length)return `<div class="trk"><b>No lectures today</b><span class="lock">Enjoy the day off.</span></div>`;
+ const done=tl.filter(x=>x.e<=nm),live=tl.find(x=>x.s<=nm&&nm<x.e),next=tl.find(x=>x.s>nm);
+ const frac=live?(nm-live.s)/(live.e-live.s):0,pct=Math.round((done.length+frac)/tl.length*100);
+ const left=e=>{const m=Math.ceil(e-nm);return m>=60?Math.floor(m/60)+" h "+m%60+" min":m+" min"};
+ let h=`<div class="trk">`;
+ if(live)h+=`<div class="live"><span class="dot"></span><b>Live now: ${esc(live.code)} ${live.kind}</b><span>${esc(live.room||"Room TBA")} · ends ${fmt(live.e)} · ${left(live.e)} left</span>
+  <div class="pb"><i style="width:${Math.round(frac*100)}%"></i></div></div>`;
+ else if(next)h+=`<div class="live"><b>Next: ${esc(next.code)} ${next.kind}</b><span>${esc(next.room||"Room TBA")} · starts ${fmt(next.s)} · in ${left(next.s)}</span></div>`;
+ else h+=`<div class="live"><b>All done for today 🎉</b></div>`;
+ h+=`<div class="day"><b>Today's progress: ${done.length} of ${tl.length} lectures done</b><div class="pb"><i style="width:${pct}%"></i></div><span>${pct}%</span></div><div class="chips">`+
+  tl.map(x=>{const st=x.e<=nm?"done":x.s<=nm?"live":"soon";return `<span class="chip ${st}">${st==="done"?"✓":st==="live"?"●":"○"} ${esc(x.code)} ${fmt(x.s)}</span>`}).join("")+`</div></div>`;
+ return h}
+function schedule(){
+ const l=mine(),td=new Date().getDay(),m=new Date().getHours()*60+new Date().getMinutes();
+ const nxt=l.filter(x=>x.d===td&&x.s>m)[0];
+ let h=`${tracker()}<div class="bar days">`+
+  DAYS.map((d,i)=>`<button class="${ui.day===i?"on":""}" onclick="ui.day=${i};render()">${d.slice(0,3)}</button>`).join("")+`</div>`;
+ const one=i=>{const a=l.filter(x=>x.d===i);return a.length?a.map(x=>card(x,isNow(x))).join(""):`<p class="lock">No lectures.</p>`};
+ h+=`<div class="daylist"><h3>${DAYS[ui.day]}</h3>${one(ui.day)}</div><div class="grid">${DAYS.map((d,i)=>`<div class="col"><h3>${d}</h3>${one(i)}</div>`).join("")}</div>`;
+ if(ui.leader)h+=`<h3>Add a lecture</h3><div class="row"><select id="ad">${DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join("")}</select>
+ <input id="ac" type="text" placeholder="Course code, e.g. ELE141"><input id="an" type="text" placeholder="Title">
+ <select id="ak"><option>Lecture</option><option>Tutorial</option><option>Lab</option></select>
+ <input id="as" type="time" value="09:00"><input id="ae" type="time" value="10:30"><input id="ar" type="text" placeholder="Room"><button class="on" onclick="addLec()">Add lecture</button></div>`;
+ return h}
+function tasks(){
+ let h="";
+ if(ui.leader)h+=`<div class="row"><input id="tt" type="text" placeholder="New task"><input id="tc" type="text" placeholder="Course"><input id="td" type="date"><button class="on" onclick="addTask()">Add task</button></div>`;
+ else h+=`<p class="hint">Only the leader can add or edit tasks.</p>`;
+ const ts=S.tasks.slice().sort((a,b)=>(a.due||"9").localeCompare(b.due||"9"));
+ h+=ts.length?ts.map(t=>`<div class="item task ${t.done?"done":""}"><input type="checkbox" ${t.done?"checked":""} onchange="chk('${t.id}')" aria-label="Done">
+  <div class="t"><b>${esc(t.title)}</b><span>${esc(t.course||"General")}${t.due?" · due "+esc(t.due):""}</span></div>${ui.leader?`<button class="x" onclick="delTask('${t.id}')">Delete</button>`:""}</div>`).join(""):`<p class="lock">No tasks yet.</p>`;
+ return h}
+function data(){
+ const cs={};all().forEach(x=>{cs[x.code]=cs[x.code]||{n:x.name,w:new Set(),l:[]};if(x.who)x.who.split("+").forEach(w=>cs[x.code].w.add(w.trim()));cs[x.code].l.push(x)});
+ if(ui.course&&cs[ui.course])return course(ui.course,cs[ui.course]);
+ let h=`<h3>Courses</h3><div class="cgrid">`+Object.entries(cs).map(([c,v])=>`<button class="ccard" style="--c:${COL[c]||"#999"}" onclick="ui.course='${c}';render()"><b>${c}</b><span>${esc(v.n)}</span><span>${(S.res[c]||[]).length} items</span></button>`).join("")+`</div>
+ <h3>Notes &amp; announcements</h3>`;
+ if(ui.leader)h+=`<div class="row"><input id="nt" type="text" placeholder="Add a note"><button class="on" onclick="addNote()">Add note</button></div>`;
+ h+=S.notes.length?S.notes.map((n,i)=>`<div class="item"><b>${esc(n.text)}</b><span>${esc(n.date)}</span>${ui.leader?`<button class="x" onclick="delNote(${i})">Delete</button>`:""}</div>`).join(""):`<p class="lock">No notes yet.</p>`;
+ return h}
+function course(c,v){
+ const r=S.res[c]||[];
+ let h=`<button onclick="ui.course=null;render()">← All courses</button><h2 style="margin:10px 0 2px">${c} ${esc(v.n)}</h2>
+ <p class="hint">${[...v.w].map(esc).join(", ")||"Instructor TBA"}</p><h3>Class times</h3>`+
+ v.l.filter(x=>x.g===ui.grp).sort((a,b)=>a.d-b.d).map(x=>`<div class="item" style="--c:${COL[c]||"#999"}"><b>${DAYS[x.d]} · ${x.kind}</b><span>${fmt(x.s)} – ${fmt(x.e)} · ${esc(x.room||"Room TBA")}</span></div>`).join("")+`<h3>Files, links &amp; notes</h3>`;
+ if(ui.leader)h+=`<div class="row"><select id="rk" onchange="rkSw()"><option value="text">Text</option><option value="url">Link (URL)</option><option value="pdf">PDF file</option></select>
+ <input id="rt" type="text" placeholder="Title"><textarea id="rc" rows="3" placeholder="Write the text" style="flex:1;min-width:200px"></textarea><input id="rf" type="file" accept="application/pdf" hidden>
+ <button class="on" onclick="addRes('${c}')">Add</button></div><p class="hint">PDFs up to 700 KB.</p>`;
+ h+=r.length?r.map(x=>`<div class="item"><b>${x.type==="text"?"📝":x.type==="url"?"🔗":"📄"} ${esc(x.title)}</b>
+ ${x.type==="text"?`<div style="white-space:pre-wrap">${esc(x.content)}</div>`:`<button onclick="openRes('${c}','${x.id}')">${x.type==="url"?"Open link":"Open PDF"}</button>`}
+ ${ui.leader?`<button class="x" onclick="delRes('${c}','${x.id}')">Delete</button>`:""}</div>`).join(""):`<p class="lock">Nothing added yet.</p>`;
+ return h}
+function rkSw(){const k=$("#rk").value;$("#rf").hidden=k!=="pdf";$("#rc").hidden=k==="pdf";$("#rc").placeholder=k==="url"?"https://...":"Write the text"}
+function addRes(c){if(!need())return;const k=$("#rk").value,t=$("#rt").value.trim(),v=$("#rc").value.trim();
+ if(!t)return toast("Add a title.");
+ const put=content=>{(S.res[c]=S.res[c]||[]).push({id:uid(),type:k,title:t,content});save();render()};
+ if(k==="pdf"){const f=$("#rf").files[0];if(!f)return toast("Choose a PDF file.");if(f.size>716800)return toast("PDF is over 700 KB. Use a link instead.");
+  const fr=new FileReader();fr.onload=()=>put(fr.result);fr.readAsDataURL(f)}
+ else{if(!v)return toast("Add the content.");if(k==="url"&&!/^https?:\/\//i.test(v))return toast("The link must start with http:// or https://");put(v)}}
+function delRes(c,id){if(!need())return;S.res[c]=(S.res[c]||[]).filter(x=>x.id!==id);save();render()}
+function openRes(c,id){const x=(S.res[c]||[]).find(y=>y.id===id);if(!x)return;
+ if(x.type==="url"){window.open(x.content,"_blank","noopener");return}
+ try{const b=atob(x.content.split(",")[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
+  const url=URL.createObjectURL(new Blob([u],{type:"application/pdf"}));const w=window.open(url,"_blank");if(!w){const a=document.createElement("a");a.href=url;a.download=x.title+".pdf";a.click()}}catch(e){toast("Could not open this PDF.")}}
+function render(){const a=document.activeElement;if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&a.id&&/^(tt|tc|td|nt|ac|an|ar|as|ae|rk|rt|rc|rf)$/.test(a.id))return;
+ $("#main").innerHTML={schedule,tasks,data}[ui.tab]();
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===ui.tab));
+ $("#lead").textContent=ui.leader?"Leader ✓ (log out)":"Leader";$("#lead").classList.toggle("on",ui.leader)}
+
+/* ---------- leader actions ---------- */
+function need(){if(!ui.leader){toast("Enter the leader code first.");return false}return true}
+const uid=()=>Math.random().toString(36).slice(2,9);
+function addTask(){if(!need())return;const t=$("#tt").value.trim();if(!t)return toast("Type the task first.");
+ const o={id:uid(),title:t,course:$("#tc").value.trim(),due:$("#td").value,done:false};seen.add(o.id);S.tasks.push(o);save();notify("New task added",t);render()}
+function chk(id){if(!need()){render();return}const t=S.tasks.find(x=>x.id===id);t.done=!t.done;save();render()}
+function delTask(id){if(!need())return;S.tasks=S.tasks.filter(t=>t.id!==id);save();render()}
+function addNote(){if(!need())return;const t=$("#nt").value.trim();if(!t)return;S.notes.unshift({text:t,date:new Date().toLocaleDateString()});save();notify("New note",t);render()}
+function delNote(i){if(!need())return;S.notes.splice(i,1);save();render()}
+function delLec(id){if(!need())return;if(BASE.some(x=>x.id===id))S.removed.push(id);else S.extra=S.extra.filter(x=>x.id!==id);save();render()}
+function addLec(){if(!need())return;const t=v=>{const [h,m]=v.split(":").map(Number);return h*60+m};
+ const c=$("#ac").value.trim().toUpperCase(),s=t($("#as").value),e=t($("#ae").value);if(!c||!(e>s))return toast("Add a course code and a valid time range.");
+ S.extra.push({id:uid(),g:ui.grp,d:+$("#ad").value,code:c,name:$("#an").value.trim(),kind:$("#ak").value,s,e,room:$("#ar").value.trim(),who:""});save();render()}
+
+/* ---------- controls ---------- */
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{ui.tab=b.dataset.t;render()});
+$("#grp").value=ui.grp;$("#grp").onchange=e=>{ui.grp=e.target.value;try{localStorage.setItem("grp",ui.grp)}catch(x){}render()};
+$("#lead").onclick=()=>{if(ui.leader){ui.leader=false;ui.key="";render();return}$("#code").value="";$("#cerr").hidden=true;$("#modal").hidden=false;$("#code").focus()};
+const tryCode=()=>{if($("#code").value===CODE){ui.leader=true;ui.key=$("#code").value;$("#modal").hidden=true;toast("Leader mode on. You can add files and tasks.");render()}else{$("#cerr").hidden=false;$("#code").select()}};
+$("#cok").onclick=tryCode;$("#ccx").onclick=()=>$("#modal").hidden=true;$("#code").onkeydown=e=>{if(e.key==="Enter")tryCode();if(e.key==="Escape")$("#modal").hidden=true};
+$("#notif").onclick=async()=>{ui.notif=true;try{localStorage.setItem("notif","1")}catch(e){}
+ if("Notification" in window){const r=await Notification.requestPermission();toast(r==="granted"?"Alerts on. Keep this page open to get them.":"Notifications blocked. In-page alerts will still show.")}else toast("This browser has no notifications. In-page alerts will show.")};
+function setView(v){document.body.classList.toggle("laptop",v==="laptop");$("#view").textContent=v==="laptop"?"Phone view":"Laptop view"}
+$("#view").onclick=()=>setView(document.body.classList.contains("laptop")?"phone":"laptop");
+setView(innerWidth>=900?"laptop":"phone");
+
+/* install as app */
+let dip=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dip=e;$("#inst").hidden=false});
+$("#inst").onclick=async()=>{if(dip){dip.prompt();dip=null;$("#inst").hidden=true}};
+let swReg=null;
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").then(r=>{swReg=r}).catch(()=>{});
+
+render();load().then(()=>{render();tick()});
+</script></body></html>
