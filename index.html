@@ -47,13 +47,18 @@ input,select,textarea{font:inherit;padding:7px 9px;border:1px solid var(--line);
 .x{margin-inline-start:auto;color:#b3261e}
 .toast{position:fixed;inset-inline:12px;top:calc(env(safe-area-inset-top,0px) + 10px);background:var(--brand);color:#fff;padding:12px 14px;border-radius:var(--r);z-index:9;box-shadow:0 6px 24px #0005;max-width:520px;margin:auto}
 .lock{color:var(--mute);font-size:13px}
-.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:10px}.ccard{text-align:start;border:1px solid var(--line);border-top:6px solid var(--c);border-radius:var(--r);padding:14px 12px;display:flex;flex-direction:column;gap:2px}.ccard b{font-size:17px}.ccard span{color:var(--mute);font-size:13px}.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;z-index:10}.modal[hidden]{display:none}.modal div{background:var(--card);padding:18px;border-radius:var(--r);width:min(320px,90%)}.modal input{width:100%;margin:8px 0}.trk{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:12px}.live{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}.live span,.day span{color:var(--mute);font-size:13px}.pb{height:10px;background:var(--line);border-radius:99px;overflow:hidden}.pb i{display:block;height:100%;background:#2f9e57;border-radius:99px;transition:width .6s}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#d93025;margin-inline-end:6px;animation:pl 1.4s infinite}@keyframes pl{50%{opacity:.25}}@media (prefers-reduced-motion:reduce){.dot{animation:none}}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:2px 9px}.chip.done{background:var(--now)}.chip.live{background:#2f9e57;color:#fff;border-color:#2f9e57}.hint{font-size:13px;color:var(--mute);margin:8px 0}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:10px}.ccard{text-align:start;border:1px solid var(--line);border-top:6px solid var(--c);border-radius:var(--r);padding:14px 12px;display:flex;flex-direction:column;gap:2px}.ccard b{font-size:17px}.ccard span{color:var(--mute);font-size:13px}.modal{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;z-index:10}.modal[hidden]{display:none}.modal div{background:var(--card);padding:18px;border-radius:var(--r);width:min(320px,90%)}.modal input{width:100%;margin:8px 0}.trk{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;margin-bottom:12px}.live{display:flex;flex-direction:column;gap:3px;margin-bottom:10px}.live span,.day span{color:var(--mute);font-size:13px}.pb{height:10px;background:var(--line);border-radius:99px;overflow:hidden}.pb i{display:block;height:100%;background:#2f9e57;border-radius:99px;transition:width .6s}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#d93025;margin-inline-end:6px;animation:pl 1.4s infinite}@keyframes pl{50%{opacity:.25}}@media (prefers-reduced-motion:reduce){.dot{animation:none}}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chip{font-size:12px;border:1px solid var(--line);border-radius:99px;padding:2px 9px}.chip.done{background:var(--now)}.chip.live{background:#2f9e57;color:#fff;border-color:#2f9e57}.hint{font-size:13px;color:var(--mute);margin:8px 0}.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:99px;padding:1px 8px;margin-inline-start:6px;vertical-align:middle}.tag.red{background:#fde2e0;color:#8a1c14}.tag.amber{background:#fdecc8;color:#7a4c00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag.red{background:#4a1a16;color:#ffb4ac}:root:not([data-theme="light"]) .tag.amber{background:#4a3a12;color:#ffd98f}}
+:root[data-theme="dark"] .tag.red{background:#4a1a16;color:#ffb4ac}:root[data-theme="dark"] .tag.amber{background:#4a3a12;color:#ffd98f}
 </style></head>
 <body>
 <header>
- <h1>Level 1 · Communications &amp; Computer Eng.<small>Semester 1, 2026/2027</small></h1>
+ <h1 id="ttl">Level 1 · Communications &amp; Computer Eng.<small id="sub">Semester 1, 2026/2027</small></h1>
  <div class="tools">
+  <select id="prog" aria-label="Program"><option value="L1">Level 1</option><option value="GEN">Level 0 / General</option></select>
   <select id="grp" aria-label="Group"><option>G1</option><option>G2</option></select>
+  <button id="theme">🖥️ Auto</button>
+  <button id="ics">Export to calendar</button>
   <button id="view">Laptop view</button>
   <button id="notif">Enable alerts</button>
   <button id="inst" hidden>Install app</button>
@@ -70,41 +75,74 @@ input,select,textarea{font:inherit;padding:7px 9px;border:1px solid var(--line);
 <script>
 const CODE="2344";
 const DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday"];
-const P=[[540,585],[585,630],[640,685],[685,730],[750,795],[795,840],[850,895],[895,940],[945,990],[990,1035],[1035,1080]];
-const COL={ELE152:"#e0a526",ELE142:"#5faa5f",ELE141:"#e08a5a",ELE151:"#6b8fd4",BAS110:"#d9c34a"};
-const L=(g,d,code,name,kind,a,b,room,who)=>({id:`${g}${d}${code}${kind}${a}`,g,d,code,name,kind,s:P[a-1][0],e:P[b-1][1],room,who});
+const P=[[540,585],[585,630],[640,685],[685,730],[750,795],[795,840],[850,895],[895,940],[945,990],[990,1035],[1035,1080],[1080,1125]];
+const L1COL={ELE152:"#e0a526",ELE142:"#5faa5f",ELE141:"#e08a5a",ELE151:"#6b8fd4",BAS110:"#d9c34a"};
+const PALETTE=["#ef6c5b","#3aa6a6","#f4b942","#7d5ba6","#4f86c6","#e0779c","#5cb85c","#c96f27","#31708e","#a15fc9"];
+function colorFor(code){let h=0;for(let i=0;i<code.length;i++)h=(h*31+code.charCodeAt(i))%PALETTE.length;return PALETTE[h]}
+const COL=new Proxy({},{get:(_,code)=>L1COL[code]||colorFor(String(code))});
+const L=(p,g,d,code,name,kind,a,b,room,who)=>({id:`${p}${g}${d}${code}${kind}${a}`,p,g,d,code,name,kind,s:P[a-1][0],e:P[b-1][1],room,who});
 const BASE=[
-L("G1",0,"ELE152","Logic Circuits","Lecture",3,4,"NP303","Dr. Hala Abdelkader + Dr. Maher Abdelrasool"),
-L("G1",0,"ELE142","Elements of Semiconductors","Lecture",5,6,"NP303","Dr. Islam Mansour"),
-L("G1",0,"ELE152","Logic Circuits","Lab",8,10,"SB5-11 Logic Lab","Eng. Iman Mohamed"),
-L("G2",0,"ELE152","Logic Circuits","Lecture",1,2,"NP303","Dr. Hala Abdelkader + Dr. Maher Abdelrasool"),
-L("G2",0,"ELE142","Elements of Semiconductors","Lecture",3,4,"NP305","Dr. Islam Mansour"),
-L("G2",0,"ELE152","Logic Circuits","Lab",5,7,"SB5-11 Logic Lab","Eng. Iman Mohamed"),
-L("G2",0,"ELE151","Structure Programming","Lab",8,10,"SB5-9 Lab","Eng. Afaf Raafat"),
-L("G1",2,"ELE142","Elements of Semiconductors","Tutorial",1,2,"NP205","Eng. Sara Adel"),
-L("G1",2,"ELE141","Principles of Electrical Eng.","Lecture",3,4,"NP304","Dr. Aya Hossam + Dr. Saeed Imam"),
-L("G1",2,"ELE141","Principles of Electrical Eng.","Tutorial",5,6,"NP205","Eng. Hadeer Ashraf"),
-L("G2",2,"ELE142","Elements of Semiconductors","Tutorial",3,4,"NP204","Eng. Sara Adel"),
-L("G2",2,"ELE141","Principles of Electrical Eng.","Lecture",5,6,"NP304","Dr. Aya Hossam + Dr. Saeed Imam"),
-L("G2",2,"ELE141","Principles of Electrical Eng.","Tutorial",7,8,"NP205","Eng. Hadeer Ashraf"),
-L("G1",3,"BAS110","Differential Equations","Lecture",1,2,"","")
-,L("G1",3,"BAS110","Differential Equations","Tutorial",3,4,"","")
-,L("G1",3,"ELE151","Structure Programming","Lecture",5,6,"","Dr. Ahmed Mahrez")
-,L("G1",3,"ELE151","Structure Programming","Lab",7,9,"SB5-9 Lab","Eng. Afaf Raafat"),
-L("G2",3,"BAS110","Differential Equations","Lecture",3,4,"",""),
-L("G2",3,"BAS110","Differential Equations","Tutorial",5,6,"",""),
-L("G2",3,"ELE151","Structure Programming","Lecture",7,8,"","Dr. Ahmed Mahrez")];
+L("L1","G1",0,"ELE152","Logic Circuits","Lecture",3,4,"NP303","Dr. Hala Abdelkader + Dr. Maher Abdelrasool"),
+L("L1","G1",0,"ELE142","Elements of Semiconductors","Lecture",5,6,"NP303","Dr. Islam Mansour"),
+L("L1","G1",0,"ELE152","Logic Circuits","Lab",8,10,"SB5-11 Logic Lab","Eng. Iman Mohamed"),
+L("L1","G2",0,"ELE152","Logic Circuits","Lecture",1,2,"NP303","Dr. Hala Abdelkader + Dr. Maher Abdelrasool"),
+L("L1","G2",0,"ELE142","Elements of Semiconductors","Lecture",3,4,"NP305","Dr. Islam Mansour"),
+L("L1","G2",0,"ELE152","Logic Circuits","Lab",5,7,"SB5-11 Logic Lab","Eng. Iman Mohamed"),
+L("L1","G2",0,"ELE151","Structure Programming","Lab",8,10,"SB5-9 Lab","Eng. Afaf Raafat"),
+L("L1","G1",2,"ELE142","Elements of Semiconductors","Tutorial",1,2,"NP205","Eng. Sara Adel"),
+L("L1","G1",2,"ELE141","Principles of Electrical Eng.","Lecture",3,4,"NP304","Dr. Aya Hossam + Dr. Saeed Imam"),
+L("L1","G1",2,"ELE141","Principles of Electrical Eng.","Tutorial",5,6,"NP205","Eng. Hadeer Ashraf"),
+L("L1","G2",2,"ELE142","Elements of Semiconductors","Tutorial",3,4,"NP204","Eng. Sara Adel"),
+L("L1","G2",2,"ELE141","Principles of Electrical Eng.","Lecture",5,6,"NP304","Dr. Aya Hossam + Dr. Saeed Imam"),
+L("L1","G2",2,"ELE141","Principles of Electrical Eng.","Tutorial",7,8,"NP205","Eng. Hadeer Ashraf"),
+L("L1","G1",3,"BAS110","Differential Equations","Lecture",1,2,"",""),
+L("L1","G1",3,"BAS110","Differential Equations","Tutorial",3,4,"",""),
+L("L1","G1",3,"ELE151","Structure Programming","Lecture",5,6,"","Dr. Ahmed Mahrez"),
+L("L1","G1",3,"ELE151","Structure Programming","Lab",7,9,"SB5-9 Lab","Eng. Afaf Raafat"),
+L("L1","G2",3,"BAS110","Differential Equations","Lecture",3,4,"",""),
+L("L1","G2",3,"BAS110","Differential Equations","Tutorial",5,6,"",""),
+L("L1","G2",3,"ELE151","Structure Programming","Lecture",7,8,"","Dr. Ahmed Mahrez"),
+L("GEN","ALL",0,"BAS011","Physics of Materials & Electricity","Lecture",1,2,"",""),
+L("GEN","ALL",0,"BAS010","Differential Calculus and Algebra","Lecture",3,4,"",""),
+L("GEN","ALL",0,"GEN90A","Elective (Leadership)","Lecture",5,6,"",""),
+L("GEN","ALL",0,"BAS012","Chemistry","Lecture",7,8,"",""),
+L("GEN","ALL",0,"EMP105","Chemistry","Lab",9,10,"",""),
+L("GEN","ALL",0,"GEN90X","Elective (Human Resources)","Lecture",9,10,"",""),
+L("GEN","ALL",1,"BAS010","Differential Calculus and Algebra","Tutorial",3,4,"",""),
+L("GEN","ALL",1,"MEC010","Drawing (1)","Lecture",5,6,"",""),
+L("GEN","ALL",1,"MEC010","Drawing (1)","Lab",7,9,"",""),
+L("GEN","ALL",1,"BAS210","Probability and Statistics","Lecture",1,2,"",""),
+L("GEN","ALL",1,"BAS210","Probability and Statistics","Tutorial",3,4,"",""),
+L("GEN","ALL",2,"GEN909","Contract","Lecture",3,4,"",""),
+L("GEN","ALL",2,"ACT000","Activities period","Activity",5,6,"",""),
+L("GEN","ALL",2,"GEN908","Technical Writing","Lecture",7,8,"",""),
+L("GEN","ALL",2,"GEN302","Professional Ethics","Lecture",9,10,"",""),
+L("GEN","G1",3,"BAS211","Complex Analysis and Transformations","Lecture",1,2,"",""),
+L("GEN","G1",3,"BAS211","Complex Analysis and Transformations","Tutorial",3,4,"",""),
+L("GEN","ALL",3,"GEN0X0","English","Lab",5,6,"",""),
+L("GEN","ALL",3,"GEN90B","Elective (Psychology)","Lecture",7,8,"",""),
+L("GEN","ALL",3,"BAS011","Physics of Materials & Electricity","Lab",9,10,"",""),
+L("GEN","G2",3,"BAS211","Complex Analysis and Transformations","Lecture",3,4,"",""),
+L("GEN","G2",3,"BAS211","Complex Analysis and Transformations","Tutorial",5,6,"",""),
+L("GEN","G1",3,"BAS110","Differential Equations","Lecture",1,2,"",""),
+L("GEN","G1",3,"BAS110","Differential Equations","Tutorial",3,4,"",""),
+L("GEN","G2",3,"BAS110","Differential Equations","Lecture",3,4,"",""),
+L("GEN","G2",3,"BAS110","Differential Equations","Tutorial",5,6,"",""),
+L("GEN","ALL",4,"BAS013","Statics","Lecture",7,8,"",""),
+L("GEN","ALL",4,"BAS013","Statics","Tutorial",5,6,"",""),
+L("GEN","ALL",4,"GEN0X0","English","Lab",9,10,"",""),
+L("GEN","ALL",4,"EXR001","Social Issues (Online)","Online",11,11,"","")];
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=m=>{const h=Math.floor(m/60),mm=String(m%60).padStart(2,"0");return `${h%12||12}:${mm} ${h<12?"AM":"PM"}`};
-let S={tasks:[],notes:[],extra:[],removed:[],res:{}};
-let ui={course:null,tab:"schedule",day:Math.min(Math.max(new Date().getDay(),0),4),leader:false,grp:"G1",notif:false};
-try{ui.grp=localStorage.getItem("grp")||"G1";ui.notif=localStorage.getItem("notif")==="1"}catch(e){}
+let S={tasks:[],notes:[],extra:[],removed:[],res:{},genSubs:[]};
+let ui={prog:"L1",course:null,gsub:null,q:"",tab:"schedule",day:Math.min(Math.max(new Date().getDay(),0),4),leader:false,grp:"G1",notif:false};
+try{ui.grp=localStorage.getItem("grp")||"G1";ui.notif=localStorage.getItem("notif")==="1";ui.prog=localStorage.getItem("prog")||"L1"}catch(e){}
 let seen=new Set(),firstLoad=true,ref=null;
 
-function all(){return BASE.filter(x=>!S.removed.includes(x.id)).concat(S.extra)}
-function mine(){return all().filter(x=>x.g===ui.grp).sort((a,b)=>a.d-b.d||a.s-b.s)}
+function all(){return BASE.filter(x=>!S.removed.includes(x.id)).concat(S.extra).filter(x=>x.p===ui.prog)}
+function mine(){return all().filter(x=>x.g===ui.grp||x.g==="ALL").sort((a,b)=>a.d-b.d||a.s-b.s)}
 
 /* ---------- storage: shared db when available, else this device ---------- */
 async function load(){
@@ -180,29 +218,53 @@ function tasks(){
  let h="";
  if(ui.leader)h+=`<div class="row"><input id="tt" type="text" placeholder="New task"><input id="tc" type="text" placeholder="Course"><input id="td" type="date"><button class="on" onclick="addTask()">Add task</button></div>`;
  else h+=`<p class="hint">Only the leader can add or edit tasks.</p>`;
+ const today=new Date();today.setHours(0,0,0,0);
  const ts=S.tasks.slice().sort((a,b)=>(a.due||"9").localeCompare(b.due||"9"));
- h+=ts.length?ts.map(t=>`<div class="item task ${t.done?"done":""}"><input type="checkbox" ${t.done?"checked":""} onchange="chk('${t.id}')" aria-label="Done">
-  <div class="t"><b>${esc(t.title)}</b><span>${esc(t.course||"General")}${t.due?" · due "+esc(t.due):""}</span></div>${ui.leader?`<button class="x" onclick="delTask('${t.id}')">Delete</button>`:""}</div>`).join(""):`<p class="lock">No tasks yet.</p>`;
+ const openN=ts.filter(t=>!t.done).length;
+ if(ts.length)h+=`<p class="hint">${ts.length-openN} of ${ts.length} tasks done</p>`;
+ h+=ts.length?ts.map(t=>{
+  let urg="";
+  if(!t.done&&t.due){const d=new Date(t.due+"T00:00:00");const diff=Math.round((d-today)/86400000);
+   if(diff<0)urg="overdue";else if(diff===0)urg="duetoday";else if(diff<=2)urg="duesoon"}
+  const tag=urg==="overdue"?'<span class="tag red">Overdue</span>':urg==="duetoday"?'<span class="tag amber">Due today</span>':urg==="duesoon"?'<span class="tag amber">Due soon</span>':"";
+  return `<div class="item task ${t.done?"done":""}"><input type="checkbox" ${t.done?"checked":""} onchange="chk('${t.id}')" aria-label="Done">
+  <div class="t"><b>${esc(t.title)} ${tag}</b><span>${esc(t.course||"General")}${t.due?" · due "+esc(t.due):""}</span></div>${ui.leader?`<button class="x" onclick="delTask('${t.id}')">Delete</button>`:""}</div>`}).join(""):`<p class="lock">No tasks yet.</p>`;
  return h}
 function data(){
  const cs={};all().forEach(x=>{cs[x.code]=cs[x.code]||{n:x.name,w:new Set(),l:[]};if(x.who)x.who.split("+").forEach(w=>cs[x.code].w.add(w.trim()));cs[x.code].l.push(x)});
- if(ui.course&&cs[ui.course])return course(ui.course,cs[ui.course]);
- let h=`<h3>Courses</h3><div class="cgrid">`+Object.entries(cs).map(([c,v])=>`<button class="ccard" style="--c:${COL[c]||"#999"}" onclick="ui.course='${c}';render()"><b>${c}</b><span>${esc(v.n)}</span><span>${(S.res[c]||[]).length} items</span></button>`).join("")+`</div>
+ if(ui.course==="__GEN__")return ui.gsub?course("GEN:"+ui.gsub,{n:ui.gsub,w:new Set(),l:[]},true):generalList();
+ if(ui.course&&cs[ui.course])return course(ui.course,cs[ui.course],false);
+ const q=(ui.q||"").trim().toLowerCase();
+ const match=(c,v)=>!q||c.toLowerCase().includes(q)||v.n.toLowerCase().includes(q);
+ let h=`<div class="row"><input id="dq" type="text" placeholder="Search courses…" value="${esc(ui.q||"")}" oninput="ui.q=this.value;render()"></div><h3>Courses</h3><div class="cgrid">`+
+ Object.entries(cs).filter(([c,v])=>match(c,v)).map(([c,v])=>`<button class="ccard" style="--c:${COL[c]||"#999"}" onclick="ui.course='${c}';render()"><b>${c}</b><span>${esc(v.n)}</span><span>${(S.res[c]||[]).length} items</span></button>`).join("")+
+ (q?"":`<button class="ccard" style="--c:#8a6fd1" onclick="ui.course='__GEN__';ui.gsub=null;render()"><b>Extra materials</b><span>Files not tied to one course</span><span>${S.genSubs.length} folders</span></button>`)+`</div>
  <h3>Notes &amp; announcements</h3>`;
  if(ui.leader)h+=`<div class="row"><input id="nt" type="text" placeholder="Add a note"><button class="on" onclick="addNote()">Add note</button></div>`;
  h+=S.notes.length?S.notes.map((n,i)=>`<div class="item"><b>${esc(n.text)}</b><span>${esc(n.date)}</span>${ui.leader?`<button class="x" onclick="delNote(${i})">Delete</button>`:""}</div>`).join(""):`<p class="lock">No notes yet.</p>`;
  return h}
-function course(c,v){
+function generalList(){
+ let h=`<button onclick="ui.course=null;render()">← All courses</button><h2 style="margin:10px 0 2px">Extra materials</h2><p class="hint">Materials that don't belong to a single course.</p>`;
+ if(ui.leader)h+=`<div class="row"><input id="gn" type="text" placeholder="New folder name, e.g. Graduation project"><button class="on" onclick="addGen()">Add folder</button></div>`;
+ h+=S.genSubs.length?`<div class="cgrid">`+S.genSubs.map(n=>`<button class="ccard" style="--c:#8a6fd1" onclick="ui.gsub='${n.replace(/'/g,"\\'")}';render()"><b>${esc(n)}</b><span>${(S.res["GEN:"+n]||[]).length} items</span></button>`).join("")+
+ (ui.leader?S.genSubs.map(n=>`<button class="x" style="display:block;margin:4px 0" onclick="delGen('${n.replace(/'/g,"\\'")}')">Delete "${esc(n)}"</button>`).join(""):"")+`</div>`:`<p class="lock">No folders yet.</p>`;
+ return h}
+function addGen(){if(!need())return;const t=$("#gn").value.trim();if(!t)return toast("Type a folder name.");
+ if(S.genSubs.includes(t))return toast("That folder already exists.");S.genSubs.push(t);save();render()}
+function delGen(n){if(!need())return;S.genSubs=S.genSubs.filter(x=>x!==n);delete S.res["GEN:"+n];save();render()}
+function course(c,v,isGen){
  const r=S.res[c]||[];
- let h=`<button onclick="ui.course=null;render()">← All courses</button><h2 style="margin:10px 0 2px">${c} ${esc(v.n)}</h2>
+ let h=isGen?`<button onclick="ui.gsub=null;render()">← Extra materials</button><h2 style="margin:10px 0 2px">${esc(v.n)}</h2>`
+ :`<button onclick="ui.course=null;render()">← All courses</button><h2 style="margin:10px 0 2px">${c} ${esc(v.n)}</h2>
  <p class="hint">${[...v.w].map(esc).join(", ")||"Instructor TBA"}</p><h3>Class times</h3>`+
- v.l.filter(x=>x.g===ui.grp).sort((a,b)=>a.d-b.d).map(x=>`<div class="item" style="--c:${COL[c]||"#999"}"><b>${DAYS[x.d]} · ${x.kind}</b><span>${fmt(x.s)} – ${fmt(x.e)} · ${esc(x.room||"Room TBA")}</span></div>`).join("")+`<h3>Files, links &amp; notes</h3>`;
+ v.l.filter(x=>x.g===ui.grp||x.g==="ALL").sort((a,b)=>a.d-b.d).map(x=>`<div class="item" style="--c:${COL[c]||"#999"}"><b>${DAYS[x.d]} · ${x.kind}</b><span>${fmt(x.s)} – ${fmt(x.e)} · ${esc(x.room||"Room TBA")}</span></div>`).join("");
+ h+=`<h3>Files, links &amp; notes</h3>`;
  if(ui.leader)h+=`<div class="row"><select id="rk" onchange="rkSw()"><option value="text">Text</option><option value="url">Link (URL)</option><option value="pdf">PDF file</option></select>
  <input id="rt" type="text" placeholder="Title"><textarea id="rc" rows="3" placeholder="Write the text" style="flex:1;min-width:200px"></textarea><input id="rf" type="file" accept="application/pdf" hidden>
- <button class="on" onclick="addRes('${c}')">Add</button></div><p class="hint">PDFs up to 700 KB.</p>`;
+ <button class="on" onclick="addRes('${c.replace(/'/g,"\\'")}')">Add</button></div><p class="hint">PDFs up to 700 KB.</p>`;
  h+=r.length?r.map(x=>`<div class="item"><b>${x.type==="text"?"📝":x.type==="url"?"🔗":"📄"} ${esc(x.title)}</b>
- ${x.type==="text"?`<div style="white-space:pre-wrap">${esc(x.content)}</div>`:`<button onclick="openRes('${c}','${x.id}')">${x.type==="url"?"Open link":"Open PDF"}</button>`}
- ${ui.leader?`<button class="x" onclick="delRes('${c}','${x.id}')">Delete</button>`:""}</div>`).join(""):`<p class="lock">Nothing added yet.</p>`;
+ ${x.type==="text"?`<div style="white-space:pre-wrap">${esc(x.content)}</div>`:`<button onclick="openRes('${c.replace(/'/g,"\\'")}','${x.id}')">${x.type==="url"?"Open link":"Open PDF"}</button>`}
+ ${ui.leader?`<button class="x" onclick="delRes('${c.replace(/'/g,"\\'")}','${x.id}')">Delete</button>`:""}</div>`).join(""):`<p class="lock">Nothing added yet.</p>`;
  return h}
 function rkSw(){const k=$("#rk").value;$("#rf").hidden=k!=="pdf";$("#rc").hidden=k==="pdf";$("#rc").placeholder=k==="url"?"https://...":"Write the text"}
 function addRes(c){if(!need())return;const k=$("#rk").value,t=$("#rt").value.trim(),v=$("#rc").value.trim();
@@ -216,7 +278,7 @@ function openRes(c,id){const x=(S.res[c]||[]).find(y=>y.id===id);if(!x)return;
  if(x.type==="url"){window.open(x.content,"_blank","noopener");return}
  try{const b=atob(x.content.split(",")[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
   const url=URL.createObjectURL(new Blob([u],{type:"application/pdf"}));const w=window.open(url,"_blank");if(!w){const a=document.createElement("a");a.href=url;a.download=x.title+".pdf";a.click()}}catch(e){toast("Could not open this PDF.")}}
-function render(){const a=document.activeElement;if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&a.id&&/^(tt|tc|td|nt|ac|an|ar|as|ae|rk|rt|rc|rf)$/.test(a.id))return;
+function render(){const a=document.activeElement;if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&a.id&&/^(tt|tc|td|nt|ac|an|ar|as|ae|rk|rt|rc|rf|gn|dq)$/.test(a.id))return;
  $("#main").innerHTML={schedule,tasks,data}[ui.tab]();
  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t===ui.tab));
  $("#lead").textContent=ui.leader?"Leader ✓ (log out)":"Leader";$("#lead").classList.toggle("on",ui.leader)}
@@ -233,10 +295,14 @@ function delNote(i){if(!need())return;S.notes.splice(i,1);save();render()}
 function delLec(id){if(!need())return;if(BASE.some(x=>x.id===id))S.removed.push(id);else S.extra=S.extra.filter(x=>x.id!==id);save();render()}
 function addLec(){if(!need())return;const t=v=>{const [h,m]=v.split(":").map(Number);return h*60+m};
  const c=$("#ac").value.trim().toUpperCase(),s=t($("#as").value),e=t($("#ae").value);if(!c||!(e>s))return toast("Add a course code and a valid time range.");
- S.extra.push({id:uid(),g:ui.grp,d:+$("#ad").value,code:c,name:$("#an").value.trim(),kind:$("#ak").value,s,e,room:$("#ar").value.trim(),who:""});save();render()}
+ S.extra.push({id:uid(),p:ui.prog,g:ui.grp,d:+$("#ad").value,code:c,name:$("#an").value.trim(),kind:$("#ak").value,s,e,room:$("#ar").value.trim(),who:""});save();render()}
 
 /* ---------- controls ---------- */
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{ui.tab=b.dataset.t;render()});
+const TITLES={L1:["Level 1 · Communications &amp; Computer Eng.","Semester 1, 2026/2027"],GEN:["Level 0 · General &amp; Shared Courses","Semester 1, 2026/2027"]};
+function applyProgTitle(){const t=TITLES[ui.prog];$("#ttl").innerHTML=t[0]+`<small id="sub">${t[1]}</small>`}
+$("#prog").value=ui.prog;applyProgTitle();
+$("#prog").onchange=e=>{ui.prog=e.target.value;ui.course=null;ui.gsub=null;try{localStorage.setItem("prog",ui.prog)}catch(x){}applyProgTitle();render()};
 $("#grp").value=ui.grp;$("#grp").onchange=e=>{ui.grp=e.target.value;try{localStorage.setItem("grp",ui.grp)}catch(x){}render()};
 $("#lead").onclick=()=>{if(ui.leader){ui.leader=false;ui.key="";render();return}$("#code").value="";$("#cerr").hidden=true;$("#modal").hidden=false;$("#code").focus()};
 const tryCode=()=>{if($("#code").value===CODE){ui.leader=true;ui.key=$("#code").value;$("#modal").hidden=true;toast("Leader mode on. You can add files and tasks.");render()}else{$("#cerr").hidden=false;$("#code").select()}};
@@ -252,6 +318,32 @@ let dip=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dip=e
 $("#inst").onclick=async()=>{if(dip){dip.prompt();dip=null;$("#inst").hidden=true}};
 let swReg=null;
 if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").then(r=>{swReg=r}).catch(()=>{});
+
+/* theme toggle: cycles Auto -> Light -> Dark -> Auto */
+function applyTheme(){const t=localStorage.getItem("theme");
+ if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);else document.documentElement.removeAttribute("data-theme");
+ $("#theme").textContent=t==="dark"?"🌙 Dark":t==="light"?"☀️ Light":"🖥️ Auto"}
+$("#theme").onclick=()=>{const cur=localStorage.getItem("theme");const next=cur==="light"?"dark":cur==="dark"?null:"light";
+ if(next)localStorage.setItem("theme",next);else localStorage.removeItem("theme");applyTheme()};
+applyTheme();
+
+/* export the current program's weekly schedule as a .ics calendar file */
+function icsEsc(s){return String(s).replace(/[\\,;]/g,m=>"\\"+m).replace(/\n/g,"\\n")}
+function nextDate(dow){const n=new Date();const add=(dow-n.getDay()+7)%7||7;const d=new Date(n);d.setDate(n.getDate()+ (add===7&&n.getDay()===dow?0:add));return d}
+$("#ics").onclick=()=>{
+ const list=mine();
+ if(!list.length)return toast("No lectures to export for this program/group.");
+ const pad=n=>String(n).padStart(2,"0");
+ const stamp=d=>`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+ let ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Schedule Site//EN\r\nCALSCALE:GREGORIAN\r\n";
+ list.forEach(x=>{
+  const day=nextDate(x.d);
+  const start=new Date(day);start.setHours(Math.floor(x.s/60),x.s%60,0,0);
+  const end=new Date(day);end.setHours(Math.floor(x.e/60),x.e%60,0,0);
+  ics+=`BEGIN:VEVENT\r\nUID:${x.id}@schedule-site\r\nDTSTART:${stamp(start)}\r\nDTEND:${stamp(end)}\r\nRRULE:FREQ=WEEKLY;COUNT=14\r\nSUMMARY:${icsEsc(x.code+" "+x.name+" · "+x.kind)}\r\nLOCATION:${icsEsc(x.room||"")}\r\nDESCRIPTION:${icsEsc(x.who||"")}\r\nEND:VEVENT\r\n`});
+ ics+="END:VCALENDAR\r\n";
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([ics],{type:"text/calendar"}));a.download=(ui.prog==="GEN"?"general":"level1")+"-schedule.ics";a.click();
+ toast("Downloaded. Open the file to add it to your phone's calendar app.")};
 
 render();load().then(()=>{render();tick()});
 </script></body></html>
